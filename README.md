@@ -1,29 +1,24 @@
 # autogen-ui
 
-Отправьте задачу команде агентов AutoGen из браузера и просмотрите ответы по мере выполнения. Чат на TypeScript и Next.js обращается к серверу FastAPI, который запускает заранее настроенную команду через AutoGen AgentChat.
+Run a prompt through an AutoGen AgentChat team and read its responses in a browser. autogen-ui pairs a TypeScript/Next.js chat interface with a Python/FastAPI backend, so you can try a predefined agent team without writing a separate client.
 
-**Совместимость:** используется интерфейс AgentChat из AutoGen 0.4.x. При обновлении AutoGen могут потребоваться изменения в коде.
+**API compatibility:** This example targets the AutoGen 0.4.x AgentChat API. Changes to that API may require updates to the app.
 
-## Возможности
+## Features
 
-- Отправляйте запросы агентам через чат в браузере.
-- Получайте результаты выполнения задачи потоком от сервера.
-- Задавайте состав и параметры команды агентов в `notebooks/default_team.json`.
-- Вызывайте выполнение задачи через HTTP-обработчик `/generate` на сервере FastAPI.
-- Изменяйте интерфейс в каталоге `frontend` и проверяйте изменения в режиме разработки Next.js.
+- Submit prompts through a browser-based chat interface.
+- Run tasks with a predefined agent team configured in `notebooks/default_team.json`.
+- Stream task results from the FastAPI backend to the client.
+- Load a team specification through the Python manager; see `notebooks/tutorial.ipynb` for an example.
 
-## Установка
+## Installation
 
-Понадобятся Node.js, Yarn и Python с pip. Интерфейс написан на TypeScript, но для выполнения задач нужен Python-сервер с AutoGen. Одной установки зависимостей JavaScript недостаточно.
+You need Python 3.9+, Node.js, and Yarn. The frontend uses TypeScript, but the agent runner requires the Python backend too.
 
-Скачайте исходники этого проекта и перейдите в каталог `autogen-ui`. Следующие команды рассчитаны на Linux и macOS:
+From the root of a local checkout of autogen-ui, install the backend and build the frontend:
 
 ```bash
-cd autogen-ui
-python -m venv .venv
-source .venv/bin/activate
 pip install -e .
-
 cd frontend
 yarn install
 export NEXT_PUBLIC_API_SERVER=http://localhost:8081/api
@@ -31,29 +26,26 @@ yarn build
 cd ..
 ```
 
-`pip install -e .` устанавливает сервер из локальных исходников. Имя проекта — `autogen-ui`, а команда запуска Python-сервера сохранена как `autogenui`.
+`NEXT_PUBLIC_API_SERVER` sets the backend address used by the frontend. Set it before building. Rebuild the frontend if you change that address or edit the frontend source.
 
-Адрес `NEXT_PUBLIC_API_SERVER` задаётся перед сборкой интерфейса. Если адрес сервера изменится, повторите сборку с новым значением.
+## Usage
 
-## Использование
-
-В корне проекта активируйте виртуальное окружение, укажите ключ OpenAI и запустите сервер:
+Set your OpenAI API key in the backend environment, then start the server:
 
 ```bash
-source .venv/bin/activate
 export OPENAI_API_KEY=<your_key>
 autogenui --port 8081
 ```
 
-Откройте http://localhost:8081, введите задачу в чат и отправьте её. Сервер передаст запрос команде из `notebooks/default_team.json` и начнёт передавать результаты в интерфейс. Чтобы изменить конфигурацию агентов, отредактируйте этот файл; выбора нескольких команд в интерфейсе пока нет.
+Open http://localhost:8081 and enter a prompt. The backend passes the prompt to the configured agent team and streams results back to the chat interface. The project name is `autogen-ui`; its Python CLI command is `autogenui`.
 
-Для разработки запустите сервер с автоматической перезагрузкой:
+For development, run the backend with hot reload:
 
 ```bash
-autogenui --reload --port 8081
+autogenui --reload
 ```
 
-В другом терминале запустите интерфейс отдельно:
+In another terminal, start the frontend development server:
 
 ```bash
 cd frontend
@@ -61,10 +53,10 @@ export NEXT_PUBLIC_API_SERVER=http://localhost:8081/api
 yarn dev
 ```
 
-Откройте адрес, который выведет Next.js. Команда `autogenui` отдаёт собранный интерфейс, поэтому для проверки изменений через неё нужно снова выполнить `yarn build` в каталоге `frontend`.
+Use the address printed by the frontend development server. The Python CLI serves a compiled frontend; use `yarn build` to refresh that version after frontend changes.
 
-В приложении нет аутентификации и авторизации. Не открывайте сервер для внешнего доступа без дополнительной защиты. Ключ `OPENAI_API_KEY` храните на стороне сервера, не в переменных `NEXT_PUBLIC_*`.
+This is a starting-point example. Authentication, authorization, database-backed interaction history, and team selection from the UI are not implemented. Keep the app local unless you add appropriate access controls.
 
-## Лицензия
+## License
 
-MIT. Проект основан на [victordibia/autogen-ui](https://github.com/victordibia/autogen-ui), также распространяемом по лицензии MIT. При распространении исходного кода и его существенных частей сохраняйте исходное уведомление об авторских правах и текст лицензии MIT.
+MIT. This project is based on [victordibia/autogen-ui](https://github.com/victordibia/autogen-ui). Retain the upstream copyright and MIT license notice in copies or substantial portions of the software.
