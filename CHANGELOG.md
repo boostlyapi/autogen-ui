@@ -1,0 +1,1 @@
+- 2026-11-23: docs pass: installation commands re-tested
